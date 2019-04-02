@@ -281,12 +281,12 @@ func init() {
 
 	cobra.OnInitialize(initConfig)
 
-	RootCmd.PersistentFlags().StringVar(&a.clientID, "client-id", "kube-config", "OAuth2 client ID of this application.")
-	RootCmd.PersistentFlags().StringVar(&a.redirectURI, "redirect-uri", "http://127.0.0.1:5555/callback", "Callback URL for OAuth2 responses.")
-	RootCmd.PersistentFlags().StringVarP(&tier, "tier", "t", "dev", "Tier to authenticate for.")
-	RootCmd.PersistentFlags().StringVar(&issuerURL, "issuer", "http://localhost", "URL of the OpenID Connect issuer.")
-	RootCmd.PersistentFlags().StringVar(&listen, "listen", "http://127.0.0.1:5555", "HTTP(S) address to listen at.")
-	RootCmd.PersistentFlags().BoolVar(&debug, "debug", false, "Print all request and responses from the OpenID Connect issuer.")
+	RootCmd.PersistentFlags().StringVar(&a.clientID, "client-id", "kube-config", "OAuth2 client ID of this application")
+	RootCmd.PersistentFlags().StringVar(&a.redirectURI, "redirect-uri", "http://127.0.0.1:5555/callback", "Callback URL for OAuth2 responses")
+	RootCmd.PersistentFlags().StringVarP(&tier, "tier", "t", "dev", "Tier to authenticate for")
+	RootCmd.PersistentFlags().StringVar(&issuerURL, "issuer", "http://localhost", "URL of the OpenID Connect issuer")
+	RootCmd.PersistentFlags().StringVar(&listen, "listen", "http://127.0.0.1:5555", "HTTP(S) address to listen at")
+	RootCmd.PersistentFlags().BoolVar(&debug, "debug", false, "Print all request and responses from the OpenID Connect issuer")
 	RootCmd.PersistentFlags().StringVarP(&userName, "username", "u", "", "Username for login")
 	RootCmd.PersistentFlags().StringVarP(&namespace, "namespace", "n", "", "Set your default namespace across ALL contexts in the tier")
 	RootCmd.PersistentFlags().StringVarP(&cluster, "cluster", "c", "", "Cluster to use as current-context (default is first in config)")
