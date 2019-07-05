@@ -14,7 +14,7 @@ func GetCertificate(serverName string, address string) string {
 	c := cleanhttp.DefaultClient()
 	t := cleanhttp.DefaultTransport()
 	t.TLSClientConfig = &tls.Config{
-		InsecureSkipVerify: false,
+		InsecureSkipVerify: insecure,
 		ServerName:         serverName,
 	}
 	c.Transport = t
