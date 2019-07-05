@@ -25,13 +25,15 @@ type app struct {
 }
 
 type Clusters struct {
-	Name        string
-	Address     string
-	Certificate string
-	Tier        string
+	Name         string
+	Address      string
+	CAServername string
+	Certificate  string
+	Tier         string
 }
 
 type Tiers struct {
-	Name   string
-	Issuer string
+	Name         string
+	Issuer       string
+	CAServername string
 }

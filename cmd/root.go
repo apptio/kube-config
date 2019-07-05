@@ -61,6 +61,7 @@ var (
 	tiers          []Tiers
 	tier           string
 	listTiers      bool
+	caservername   string
 )
 
 // for the version command
@@ -114,11 +115,12 @@ It will also generate you a Kubernetes configuration file based on your login cr
 			log.Info("Outputting available tiers")
 
 			table := tablewriter.NewWriter(os.Stdout)
-			table.SetHeader([]string{"Name", "Issuer"})
+			table.SetHeader([]string{"Name", "Issuer", "CAServername"})
 
 			for _, v := range tiers {
 				entry = append(entry, v.Name)
 				entry = append(entry, v.Issuer)
+				entry = append(entry, v.CAServername)
 				table.Append(entry)
 				entry = entry[:0]
 			}
@@ -132,6 +134,10 @@ It will also generate you a Kubernetes configuration file based on your login cr
 		for _, i := range tiers {
 			if i.Name == tier {
 				issuerURL = i.Issuer
+				if i.CAServername != "" {
+					caservername = i.CAServername
+				}
+
 				log.Debug("Using Issuer URL: ", issuerURL)
 			}
 		}
@@ -237,7 +243,7 @@ It will also generate you a Kubernetes configuration file based on your login cr
 			}
 		}
 
-		kubeConfig, err := NewKubeConfig(cluster, tierClusters, userName, namespace, fileHandle, a.clientID, issuerURL, a.clientSecret)
+		kubeConfig, err := NewKubeConfig(cluster, tierClusters, userName, namespace, caservername, fileHandle, a.clientID, issuerURL, a.clientSecret)
 
 		if err != nil {
 			log.Warn("Error generating KubeConfig: ", err)
@@ -285,6 +291,7 @@ func init() {
 	RootCmd.PersistentFlags().StringVar(&a.redirectURI, "redirect-uri", "http://127.0.0.1:5555/callback", "Callback URL for OAuth2 responses")
 	RootCmd.PersistentFlags().StringVarP(&tier, "tier", "t", "dev", "Tier to authenticate for")
 	RootCmd.PersistentFlags().StringVar(&issuerURL, "issuer", "http://localhost", "URL of the OpenID Connect issuer")
+	RootCmd.PersistentFlags().StringVar(&caservername, "caservername", "", "Servername for CA service")
 	RootCmd.PersistentFlags().StringVar(&listen, "listen", "http://127.0.0.1:5555", "HTTP(S) address to listen at")
 	RootCmd.PersistentFlags().BoolVar(&debug, "debug", false, "Print all request and responses from the OpenID Connect issuer")
 	RootCmd.PersistentFlags().StringVarP(&userName, "username", "u", "", "Username for login")
