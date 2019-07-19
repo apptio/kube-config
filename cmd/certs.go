@@ -3,8 +3,8 @@ package cmd
 import (
 	"crypto/tls"
 	b64 "encoding/base64"
-	log "github.com/Sirupsen/logrus"
 	"github.com/hashicorp/go-cleanhttp"
+	log "github.com/sirupsen/logrus"
 	"io/ioutil"
 	//"net/http"
 )

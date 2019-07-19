@@ -1,6 +1,6 @@
 # kube-config
 
-kube-config is a simple command line tool to generate a kubernetes configuration for Apptio Kubernetes clusters.
+kube-config is a simple command line tool to generate a kubernetes configuration for Kubernetes clusters.
 
 It will do the following upon execution:
 
@@ -41,4 +41,3 @@ If you want to write your `KUBECONFIG` to a file, specify a path to an output fi
 
 # Building
 
-TODO

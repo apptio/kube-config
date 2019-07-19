@@ -1,14 +1,17 @@
 package cmd
 
 import (
-	log "github.com/Sirupsen/logrus"
 	"html/template"
 	"io"
+
+	log "github.com/sirupsen/logrus"
 )
 
 // KubeConfig holds the information necessary to generate a Kubernetes configuration file which icludes the server's CA, the api url and where to write the file to.
 type KubeConfig struct {
+	Cluster      string
 	Clusters     []Clusters
+	Username     string
 	NS           string
 	tmpl         *template.Template
 	Output       io.ReadWriteCloser
@@ -36,9 +39,17 @@ contexts:
 - context:
     cluster: {{.Name}}
     user: {{$.Username}}@{{.Tier}}
+    {{- if $.NS }}
+    namespace: {{$.NS}}
+    {{- end }}
   name: {{$.Username}}@{{.Name}}
 {{- end}}
-current-context: {{.Username}}@{{ (index .Clusters 0).Name }}
+current-context: {{.Username}}@
+	{{- if $.Cluster }}
+		{{- $.Cluster }}
+	{{- else }}
+		{{- (index .Clusters 0).Name }}
+	{{- end }}
 kind: Config
 preferences: {}
 users:
@@ -56,7 +67,9 @@ users:
 `
 
 type configData struct {
+	Cluster      string
 	Clusters     []Clusters
+	userName     string
 	NS           string
 	Token        string
 	RefreshToken string
@@ -70,7 +83,7 @@ type configData struct {
 var funcs = template.FuncMap{"getCert": GetCertificate}
 
 // NewKubeConfig returns an initialized KubeConfig struct.
-func NewKubeConfig(clusters []Clusters, namespace string, output io.ReadWriteCloser, clientID string, issuer string, clientSecret string) (*KubeConfig, error) {
+func NewKubeConfig(cluster string, clusters []Clusters, username string, namespace string, output io.ReadWriteCloser, clientID string, issuer string, clientSecret string) (*KubeConfig, error) {
 	tmpl, err := template.New("config").Funcs(funcs).Parse(content)
 	if err != nil {
 		return nil, err
@@ -84,7 +97,9 @@ func NewKubeConfig(clusters []Clusters, namespace string, output io.ReadWriteClo
 	}
 
 	return &KubeConfig{
+		cluster,
 		clusters,
+		username,
 		namespace,
 		tmpl,
 		output,
@@ -102,7 +117,9 @@ func (k *KubeConfig) Generate(token string, refreshToken string) error {
 	log.Debug("kubeconfig struct contains: ", k)
 
 	err := k.tmpl.Execute(k.Output, configData{
+		k.Cluster,
 		k.Clusters,
+		k.Username,
 		k.NS,
 		token,
 		refreshToken,

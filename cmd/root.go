@@ -33,9 +33,10 @@ import (
 	"github.com/spf13/viper"
 
 	"context"
-	log "github.com/Sirupsen/logrus"
 	"net/http"
 	"time"
+
+	log "github.com/sirupsen/logrus"
 
 	"github.com/coreos/go-oidc"
 	"github.com/hashicorp/go-cleanhttp"
@@ -52,7 +53,9 @@ var (
 	listen         string
 	debug          bool
 	userName       string
+	namespace      string
 	clusters       []Clusters
+	cluster        string
 	outputFilePath string
 	insecure       bool
 	tiers          []Tiers
@@ -66,8 +69,8 @@ var Version string
 // RootCmd represents the base command when called without any subcommands
 var RootCmd = &cobra.Command{
 	Use:   "kube-config",
-	Short: "Configure a kubeconfig for Apptio Kubernetes Clusters",
-	Long: `kube-config is Apptios' method of authenticating to a Kubernetes cluster.
+	Short: "Configure a kubeconfig for Kubernetes Clusters that have Dex as an IDP",
+	Long: `kube-config is a method of authenticating to a Kubernetes cluster which uses Dex an IDP.
 	
 The tool will authenticate you using your credentials provider, and grab a token.
 It will also generate you a Kubernetes configuration file based on your login credentials.`,
@@ -136,7 +139,7 @@ It will also generate you a Kubernetes configuration file based on your login cr
 		ctx := oidc.ClientContext(context.Background(), a.client)
 		provider, err := oidc.NewProvider(ctx, issuerURL)
 		if err != nil {
-			log.Fatal("Failed to query provider %q: %v", issuerURL, err)
+			log.Fatalf("Failed to query provider %q: %v", issuerURL, err)
 		}
 
 		var s struct {
@@ -147,7 +150,7 @@ It will also generate you a Kubernetes configuration file based on your login cr
 		}
 
 		if err := provider.Claims(&s); err != nil {
-			log.Fatal("Failed to parse provider scopes_supported: %v", err)
+			log.Fatalf("Failed to parse provider scopes_supported: %v", err)
 		}
 
 		if len(s.ScopesSupported) == 0 {
@@ -190,16 +193,16 @@ It will also generate you a Kubernetes configuration file based on your login cr
 				if ok {
 					err := os.MkdirAll(outputFilePath, 0700)
 					if err != nil {
-						log.Fatal("Error creating directory: %s ", err)
+						log.Fatalf("Error creating directory: %s", err)
 					}
 				} else {
-					log.Fatal("Cannot continue, please create directory %s", outputFilePath)
+					log.Fatalf("Cannot continue, please create directory %s", outputFilePath)
 				}
 			}
 
 			fileHandle, err = os.Create(outputFilePath + "/" + tier + "-config.yml")
 			if err != nil {
-				log.Fatal("Error creating kubeconfig: ", err)
+				log.Fatalf("Error creating kubeconfig: %v", err)
 			}
 		}
 
@@ -208,7 +211,7 @@ It will also generate you a Kubernetes configuration file based on your login cr
 		err = viper.UnmarshalKey("clusters", &clusters)
 
 		if err != nil {
-			log.Fatal("Error reading datacenters: ", err)
+			log.Fatalf("Error reading datacenters: %v", err)
 		}
 
 		if clusters == nil {
@@ -229,7 +232,7 @@ It will also generate you a Kubernetes configuration file based on your login cr
 			}
 		}
 
-		kubeConfig, err := NewKubeConfig(tierClusters, userName, fileHandle, a.clientID, issuerURL, a.clientSecret)
+		kubeConfig, err := NewKubeConfig(cluster, tierClusters, userName, namespace, fileHandle, a.clientID, issuerURL, a.clientSecret)
 
 		if err != nil {
 			log.Warn("Error generating KubeConfig: ", err)
@@ -238,8 +241,6 @@ It will also generate you a Kubernetes configuration file based on your login cr
 		a.kubeconfig = kubeConfig
 
 		srv := startHttpServer(&a, listen)
-
-		srv.Shutdown(context.Background())
 
 		open.Run(listen)
 
@@ -276,13 +277,15 @@ func init() {
 	cobra.OnInitialize(initConfig)
 
 	RootCmd.PersistentFlags().StringVar(&a.clientID, "client-id", "kube-config", "OAuth2 client ID of this application.")
-	RootCmd.PersistentFlags().StringVar(&a.clientSecret, "client-secret", "ZXhhbXBsZS1hcHAtc2VjcmV0", "OAuth2 client secret of this application.")
+	RootCmd.PersistentFlags().StringVar(&a.clientSecret, "client-secret", "random-string", "OAuth2 client secret of this application.")
 	RootCmd.PersistentFlags().StringVar(&a.redirectURI, "redirect-uri", "http://127.0.0.1:5555/callback", "Callback URL for OAuth2 responses.")
 	RootCmd.PersistentFlags().StringVarP(&tier, "tier", "t", "dev", "Tier to authenticate for.")
 	RootCmd.PersistentFlags().StringVar(&issuerURL, "issuer", "http://localhost", "URL of the OpenID Connect issuer.")
 	RootCmd.PersistentFlags().StringVar(&listen, "listen", "http://127.0.0.1:5555", "HTTP(S) address to listen at.")
 	RootCmd.PersistentFlags().BoolVar(&debug, "debug", false, "Print all request and responses from the OpenID Connect issuer.")
 	RootCmd.PersistentFlags().StringVarP(&userName, "username", "u", "", "Username for login")
+	RootCmd.PersistentFlags().StringVarP(&namespace, "namespace", "n", "", "Set your default namespace across ALL contexts in the tier")
+	RootCmd.PersistentFlags().StringVarP(&cluster, "cluster", "c", "", "Cluster to use as current-context (default is first in config)")
 	RootCmd.PersistentFlags().StringVarP(&outputFilePath, "output", "o", os.Getenv("HOME")+"/.kube/config.d", "Path to write Kubeconfig file")
 	RootCmd.PersistentFlags().BoolVarP(&insecure, "no-verify-ssl", "k", false, "If specified, disable SSL cert checking (WARNING: UNSAFE)")
 	RootCmd.PersistentFlags().BoolVar(&listTiers, "list-tiers", false, "If specified, the program will list the available tiers and then exit")

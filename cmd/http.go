@@ -4,26 +4,27 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	t "github.com/apptio/kube-config/pkg/templates"
-	log "github.com/Sirupsen/logrus"
-	"github.com/coreos/go-oidc"
-	"golang.org/x/oauth2"
 	"net/http"
 	"net/url"
 	"time"
+
+	t "github.com/apptio/kube-config/pkg/templates"
+	"github.com/coreos/go-oidc"
+	log "github.com/sirupsen/logrus"
+	"golang.org/x/oauth2"
 )
 
 func startHttpServer(a *app, listen string) *http.Server {
 
 	u, err := url.Parse(a.redirectURI)
 	if err != nil {
-		log.Fatal("parse redirect-uri: %v", err)
+		log.Fatalf("parse redirect-uri: %v", err)
 	}
 	log.Debug("redirect-uri: ", a.redirectURI)
 
 	listenURL, err := url.Parse(listen)
 	if err != nil {
-		log.Fatal("parse listen address: %v", err)
+		log.Fatalf("parse listen address: %v", err)
 	}
 
 	log.Debug("listenURL: ", listenURL)
