@@ -36,7 +36,7 @@ import (
 	"net/http"
 	"time"
 
-	log "github.com/sirupsen/logrus"
+	log "github.com/Sirupsen/logrus"
 
 	"github.com/coreos/go-oidc"
 	"github.com/hashicorp/go-cleanhttp"

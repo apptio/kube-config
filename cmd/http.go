@@ -10,7 +10,7 @@ import (
 
 	t "github.com/apptio/kube-config/pkg/templates"
 	"github.com/coreos/go-oidc"
-	log "github.com/sirupsen/logrus"
+	log "github.com/Sirupsen/logrus"
 	"golang.org/x/oauth2"
 )
 

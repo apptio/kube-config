@@ -4,7 +4,7 @@ import (
 	"crypto/tls"
 	b64 "encoding/base64"
 	"github.com/hashicorp/go-cleanhttp"
-	log "github.com/sirupsen/logrus"
+	log "github.com/Sirupsen/logrus"
 	"io/ioutil"
 	//"net/http"
 )

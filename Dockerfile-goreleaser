@@ -1,0 +1,7 @@
+FROM scratch
+
+WORKDIR /app
+
+COPY ./kube-config /app
+
+ENTRYPOINT ["/app/kube-config"]
