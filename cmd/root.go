@@ -207,6 +207,7 @@ It will also generate you a Kubernetes configuration file based on your login cr
 		}
 
 		userName = viper.GetString("username")
+		a.clientSecret = viper.GetString("client-secret")
 
 		err = viper.UnmarshalKey("clusters", &clusters)
 
@@ -219,7 +220,11 @@ It will also generate you a Kubernetes configuration file based on your login cr
 		}
 
 		if userName == "" {
-			log.Info("Please specify a username to login with")
+			log.Fatal("Please specify a username to login with")
+		}
+
+		if a.clientSecret == "" {
+			log.Fatal("Client secret must be specified in config file")
 		}
 
 		// loop through the clusters
@@ -277,7 +282,6 @@ func init() {
 	cobra.OnInitialize(initConfig)
 
 	RootCmd.PersistentFlags().StringVar(&a.clientID, "client-id", "kube-config", "OAuth2 client ID of this application.")
-	RootCmd.PersistentFlags().StringVar(&a.clientSecret, "client-secret", "random-string", "OAuth2 client secret of this application.")
 	RootCmd.PersistentFlags().StringVar(&a.redirectURI, "redirect-uri", "http://127.0.0.1:5555/callback", "Callback URL for OAuth2 responses.")
 	RootCmd.PersistentFlags().StringVarP(&tier, "tier", "t", "dev", "Tier to authenticate for.")
 	RootCmd.PersistentFlags().StringVar(&issuerURL, "issuer", "http://localhost", "URL of the OpenID Connect issuer.")
@@ -291,7 +295,6 @@ func init() {
 	RootCmd.PersistentFlags().BoolVar(&listTiers, "list-tiers", false, "If specified, the program will list the available tiers and then exit")
 	viper.BindPFlag("username", RootCmd.PersistentFlags().Lookup("username"))
 	RootCmd.PersistentFlags().MarkHidden("client-id")
-	RootCmd.PersistentFlags().MarkHidden("client-secret")
 	RootCmd.PersistentFlags().MarkHidden("listen")
 	RootCmd.PersistentFlags().MarkHidden("redirect-uri")
 	RootCmd.PersistentFlags().MarkHidden("issuer")
