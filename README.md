@@ -79,7 +79,7 @@ Flags:
   -k, --no-verify-ssl        If specified, disable SSL cert checking (WARNING: UNSAFE)
   -o, --output string        Path to write Kubeconfig file (default "/home/lbriggs/.kube/config.d")
   -t, --tier string          Tier to authenticate for (default "dev")
-  -t, --caservername string  Override Servername used for verifying cluster CA server certificate
+      --caservername string  Override Servername used for verifying cluster CA server certificate
   -u, --username string      Username for login
 ```
 
