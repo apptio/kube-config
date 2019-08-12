@@ -9,11 +9,14 @@ import (
 	//"net/http"
 )
 
-func GetCertificate(address string) string {
+func GetCertificate(serverName string, address string) string {
 
 	c := cleanhttp.DefaultClient()
 	t := cleanhttp.DefaultTransport()
-	t.TLSClientConfig = &tls.Config{InsecureSkipVerify: true}
+	t.TLSClientConfig = &tls.Config{
+		InsecureSkipVerify: insecure,
+		ServerName:         serverName,
+	}
 	c.Transport = t
 	//http.DefaultTransport.(*http.Transport).TLSClientConfig = &tls.Config{InsecureSkipVerify: true}
 

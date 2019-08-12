@@ -13,6 +13,7 @@ type KubeConfig struct {
 	Clusters     []Clusters
 	Username     string
 	NS           string
+	CAServername string
 	tmpl         *template.Template
 	Output       io.ReadWriteCloser
 	ClientID     string
@@ -24,12 +25,13 @@ type KubeConfig struct {
 var content = `
 apiVersion: v1
 clusters:
+{{- $caservername := .CAServername }}
 {{- range .Clusters}}
 - cluster:
     {{- if .Certificate }}
     certificate-authority-data: {{.Certificate}}
-    {{- else }}
-    certificate-authority-data: {{printf "https://%s:6444/ca.crt" .Address | getCert }}
+    {{- else }}{{- $sname := or .CAServername $caservername }}
+    certificate-authority-data: {{printf "https://%s:6444/ca.crt" .Address | getCert $sname }}
     {{- end }}
     server: https://{{.Address}}:6443
   name: {{.Name}}
@@ -71,6 +73,7 @@ type configData struct {
 	Clusters     []Clusters
 	userName     string
 	NS           string
+	CAServername string
 	Token        string
 	RefreshToken string
 	Username     string
@@ -83,7 +86,7 @@ type configData struct {
 var funcs = template.FuncMap{"getCert": GetCertificate}
 
 // NewKubeConfig returns an initialized KubeConfig struct.
-func NewKubeConfig(cluster string, clusters []Clusters, username string, namespace string, output io.ReadWriteCloser, clientID string, issuer string, clientSecret string) (*KubeConfig, error) {
+func NewKubeConfig(cluster string, clusters []Clusters, username string, namespace string, caservername string, output io.ReadWriteCloser, clientID string, issuer string, clientSecret string) (*KubeConfig, error) {
 	tmpl, err := template.New("config").Funcs(funcs).Parse(content)
 	if err != nil {
 		return nil, err
@@ -101,6 +104,7 @@ func NewKubeConfig(cluster string, clusters []Clusters, username string, namespa
 		clusters,
 		username,
 		namespace,
+		caservername,
 		tmpl,
 		output,
 		clientID,
@@ -121,6 +125,7 @@ func (k *KubeConfig) Generate(token string, refreshToken string) error {
 		k.Clusters,
 		k.Username,
 		k.NS,
+		k.CAServername,
 		token,
 		refreshToken,
 		userName,
