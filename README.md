@@ -118,11 +118,11 @@ $ kube-config -t dev -c cluster1 -n kube-system
 
 ## Building
 
-We use glide for dependencies, so simple download the dependencies using glide:
+We use go itself for dependencies, so simply download them by running:
 
 ```bash
 cd kube-config
-glide install
+go mod download
 ```
 
 and then build using the standard GO build tools:
