@@ -35,6 +35,7 @@ import (
 	"context"
 	"net/http"
 	"time"
+	"strings"
 
 	log "github.com/Sirupsen/logrus"
 
@@ -260,10 +261,31 @@ It will also generate you a Kubernetes configuration file based on your login cr
 		}
 
 		log.Infof("Your kubeconfig has been written to %s/%s-config.yml", outputFilePath, tier)
-		log.Warnf("You must set the KUBECONFIG environment variable. It's suggested you export all the files in %s. You can do this by running:", outputFilePath)
-		log.Warnf("export KUBECONFIG=$HOME/.kube/config; for i in %s/*.yml; do export KUBECONFIG=$KUBECONFIG:$i; done", outputFilePath)
+
+		// get value of KUBECONFIG env var
+		kubeconfig := os.Getenv("KUBECONFIG")
+		// split it
+		kc := strings.Split(kubeconfig, ":")
+	
+		// loop through the list and check if there's an entry for the written file we just made
+		valid := stringInSlice(outputFilePath + "/" + tier + "-config.yml", kc)
+
+		if !valid {
+			fmt.Printf("\nYou have not correctly configured your KUBECONFIG environment variable\nThe file %s/%s-config.yml needs to be added\n", outputFilePath, tier)
+			fmt.Print("Please run the following command:\n\n")
+			fmt.Printf("export KUBECONFIG=$HOME/.kube/config; for i in %s/*.yml; do export KUBECONFIG=$KUBECONFIG:$i; done\n\n", outputFilePath)
+		}
 
 	},
+}
+
+func stringInSlice(a string, list []string) bool {
+    for _, b := range list {
+        if b == a {
+            return true
+        }
+    }
+    return false
 }
 
 // Execute adds all child commands to the root command sets flags appropriately.
