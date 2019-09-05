@@ -34,8 +34,8 @@ import (
 
 	"context"
 	"net/http"
-	"time"
 	"strings"
+	"time"
 
 	log "github.com/Sirupsen/logrus"
 
@@ -272,9 +272,9 @@ It will also generate you a Kubernetes configuration file based on your login cr
 		kubeconfig := os.Getenv("KUBECONFIG")
 		// split it
 		kc := strings.Split(kubeconfig, ":")
-	
+
 		// loop through the list and check if there's an entry for the written file we just made
-		valid := stringInSlice(outputFilePath + "/" + tier + "-config.yml", kc)
+		valid := stringInSlice(outputFilePath+"/"+tier+"-config.yml", kc)
 
 		if !valid {
 			fmt.Printf("\nYou have not correctly configured your KUBECONFIG environment variable\nThe file %s/%s-config.yml needs to be added\n", outputFilePath, tier)
@@ -286,12 +286,12 @@ It will also generate you a Kubernetes configuration file based on your login cr
 }
 
 func stringInSlice(a string, list []string) bool {
-    for _, b := range list {
-        if b == a {
-            return true
-        }
-    }
-    return false
+	for _, b := range list {
+		if b == a {
+			return true
+		}
+	}
+	return false
 }
 
 // Execute adds all child commands to the root command sets flags appropriately.
@@ -343,7 +343,8 @@ func initConfig() {
 	viper.SetConfigName("kube-config")
 	viper.AddConfigPath(".")
 	viper.AddConfigPath("$HOME/.kube-config") // adding home directory as first search path
-	viper.AddConfigPath("/usr/local/etc")
+	viper.AddConfigPath("/usr/local/etc")     // homebrew sandbox etc directory
+	viper.AddConfigPath("/usr/local/lib")     // homebrew sandbox lib directory
 	viper.AddConfigPath("/etc")
 	viper.AutomaticEnv() // read in environment variables that match
 
