@@ -343,14 +343,16 @@ func initConfig() {
 	viper.SetConfigName("kube-config")
 	viper.AddConfigPath(".")
 	viper.AddConfigPath("$HOME/.kube-config") // adding home directory as first search path
+	viper.AddConfigPath(os.Getenv("HOMEBREW_PREFIX") + "/etc")  // linuxbrew sandbox etc directory
 	viper.AddConfigPath("/usr/local/etc")     // homebrew sandbox etc directory
+	viper.AddConfigPath(os.Getenv("HOMEBREW_PREFIX") + "/lib")  // linuxbrew sandbox lib directory
 	viper.AddConfigPath("/usr/local/lib")     // homebrew sandbox lib directory
 	viper.AddConfigPath("/etc")
 	viper.AutomaticEnv() // read in environment variables that match
 
 	// If a config file is found, read it in.
 	if err := viper.ReadInConfig(); err == nil {
-		log.Debug("Using config file: ", viper.ConfigFileUsed())
+		log.Info("Using config file: ", viper.ConfigFileUsed())
 	}
 
 	currentUser, err := user.Current()
