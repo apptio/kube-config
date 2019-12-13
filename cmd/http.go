@@ -6,11 +6,13 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
+	"os"
+	"sort"
 	"time"
 
+	log "github.com/Sirupsen/logrus"
 	t "github.com/apptio/kube-config/pkg/templates"
 	"github.com/coreos/go-oidc"
-	log "github.com/Sirupsen/logrus"
 	"golang.org/x/oauth2"
 )
 
@@ -115,6 +117,20 @@ func (a *app) handleCallback(w http.ResponseWriter, r *http.Request) {
 	a.kubeconfig.Generate(rawIDToken, token.RefreshToken)
 	a.tokenRetrieved <- 1
 
+	if printgroups {
+		var claimsJSON map[string]interface{}
+		json.Unmarshal(claims, &claimsJSON)
+		groups := claimsJSON["groups"].([]interface{})
+		groupSlice := make([]string, len(groups))
+		for i, group := range groups {
+			groupSlice[i] = group.(string)
+		}
+		sort.Strings(groupSlice)
+		for _, group := range groupSlice {
+			fmt.Println(group)
+		}
+		os.Exit(0)
+	}
 }
 
 func (a *app) handleLogin(w http.ResponseWriter, r *http.Request) {

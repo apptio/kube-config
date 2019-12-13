@@ -26,6 +26,7 @@ package cmd
 import (
 	"crypto/tls"
 	"fmt"
+	"io/ioutil"
 	"os"
 	"os/user"
 
@@ -63,6 +64,7 @@ var (
 	tier           string
 	listTiers      bool
 	caservername   string
+	printgroups    bool
 )
 
 // for the version command
@@ -321,6 +323,7 @@ func init() {
 	RootCmd.PersistentFlags().StringVarP(&cluster, "cluster", "c", "", "Cluster to use as current-context (default is first in config)")
 	RootCmd.PersistentFlags().StringVarP(&outputFilePath, "output", "o", os.Getenv("HOME")+"/.kube/config.d", "Path to write Kubeconfig file")
 	RootCmd.PersistentFlags().BoolVarP(&insecure, "no-verify-ssl", "k", false, "If specified, disable SSL cert checking (WARNING: UNSAFE)")
+	RootCmd.PersistentFlags().BoolVarP(&printgroups, "print-groups", "g", false, "If specified, will print out the AD groups you belong to")
 	RootCmd.PersistentFlags().BoolVar(&listTiers, "list-tiers", false, "If specified, the program will list the available tiers and then exit")
 	viper.BindPFlag("username", RootCmd.PersistentFlags().Lookup("username"))
 	RootCmd.PersistentFlags().MarkHidden("client-id")
@@ -340,13 +343,17 @@ func initConfig() {
 		log.SetLevel(log.DebugLevel)
 	}
 
+	if printgroups {
+		log.SetOutput(ioutil.Discard)
+	}
+
 	viper.SetConfigName("kube-config")
 	viper.AddConfigPath(".")
-	viper.AddConfigPath("$HOME/.kube-config") // adding home directory as first search path
-	viper.AddConfigPath(os.Getenv("HOMEBREW_PREFIX") + "/etc")  // linuxbrew sandbox etc directory
-	viper.AddConfigPath("/usr/local/etc")     // homebrew sandbox etc directory
-	viper.AddConfigPath(os.Getenv("HOMEBREW_PREFIX") + "/lib")  // linuxbrew sandbox lib directory
-	viper.AddConfigPath("/usr/local/lib")     // homebrew sandbox lib directory
+	viper.AddConfigPath("$HOME/.kube-config")                  // adding home directory as first search path
+	viper.AddConfigPath(os.Getenv("HOMEBREW_PREFIX") + "/etc") // linuxbrew sandbox etc directory
+	viper.AddConfigPath("/usr/local/etc")                      // homebrew sandbox etc directory
+	viper.AddConfigPath(os.Getenv("HOMEBREW_PREFIX") + "/lib") // linuxbrew sandbox lib directory
+	viper.AddConfigPath("/usr/local/lib")                      // homebrew sandbox lib directory
 	viper.AddConfigPath("/etc")
 	viper.AutomaticEnv() // read in environment variables that match
 
