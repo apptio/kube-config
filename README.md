@@ -87,16 +87,18 @@ If you want to write your `KUBECONFIG` to a specific directory, use `--output|-o
 `kube-config` flags from the `--help` output:
 
     Flags:
-      -c, --cluster string       Cluster to use as current-context (default is first in config)
-          --debug                Print all request and responses from the OpenID Connect issuer
-      -h, --help                 help for kube-config
-          --list-tiers           If specified, the program will list the available tiers and then exit
-      -n, --namespace string     Set your default namespace across ALL contexts in the tier
-      -k, --no-verify-ssl        If specified, disable SSL cert checking (WARNING: UNSAFE)
-      -o, --output string        Path to write Kubeconfig file (default "/home/lbriggs/.kube/config.d")
-      -t, --tier string          Tier to authenticate for (default "dev")
-          --caservername string  Override Servername used for verifying cluster CA server certificate
-      -u, --username string      Username for login
+        --caservername string   Servername for CA service
+    -c, --cluster string        Cluster to use as current-context (default is first in config)
+        --debug                 Print all request and responses from the OpenID Connect issuer
+    -h, --help                  help for kube-config
+        --list-tiers            If specified, the program will list the available tiers and then exit
+    -n, --namespace string      Set your default namespace across ALL contexts in the tier
+    -k, --no-verify-ssl         If specified, disable SSL cert checking (WARNING: UNSAFE)
+    -o, --output string         Path to write Kubeconfig file (default "/home/lbriggs/.kube/config.d")
+    -g, --print-groups          If specified, will print out the AD groups you belong to
+    -t, --tier string           Tier to authenticate for (default "dev")
+    -u, --username string       Username for login
+
 
 Run kube config with a tier and cluster target:
 
