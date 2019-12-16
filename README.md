@@ -1,4 +1,4 @@
-# kube-config [![Build Status](https://travis-ci.org/apptio/kube-config.svg?branch=master)](https://travis-ci.org/apptio/kube-config) <!-- omit in toc -->
+# kube-config [![Build Status](https://travis-ci.org/apptio/kube-config.svg?branch=master)](https://travis-ci.org/apptio/kube-config) <!-- omit in toc -->[![Go Report Card](https://goreportcard.com/badge/github.com/apptio/kube-config)](https://goreportcard.com/report/github.com/apptio/kube-config)
 
 `kube-config` is a simple command line tool to authenticate and generate kubernetes configurations for your clusters
 
