@@ -9,6 +9,7 @@ import (
 	//"net/http"
 )
 
+//GetCertificate fetches remote certificate from the given serverName and address.
 func GetCertificate(serverName string, address string) string {
 
 	c := cleanhttp.DefaultClient()
@@ -30,7 +31,9 @@ func GetCertificate(serverName string, address string) string {
 
 	defer result.Body.Close()
 	cert, err := ioutil.ReadAll(result.Body)
-
+	if err != nil {
+		log.WithFields(log.Fields{"server": address}).Fatal("Failed to read results:", err)
+	}
 	encoded := b64.StdEncoding.EncodeToString(cert)
 
 	return encoded
