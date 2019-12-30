@@ -14,34 +14,37 @@ builds:
     main: .
     ldflags: -s -w -X main.version={{.Version}} -X main.commit={{.Commit}} -X main.date={{.Date}}
     binary: kube-config
-archive:
-  format: tar.gz
-  name_template: '{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}{{ if .Arm }}v{{ .Arm }}{{ end }}'
-  files:
-  - licence*
-  - LICENCE*
-  - license*
-  - LICENSE*
-  - readme*
-  - README*
-  - changelog*
-  - CHANGELOG*
-nfpm:
-  vendor: Apptio
-  homepage: "https://github.com/apptio/kube-config"
-  maintainer: Lee Briggs <lbriggs@apptio.com>
-  description: "Configure KUBECONFIG files for OIDC Kubernetes clusters"
-  license: MIT
-  formats:
-    - rpm
-    - deb
-  bindir: /usr/local/bin
+archives:
+  -
+    id: brew_archive
+    format: tar.gz
+    name_template: '{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}{{ if .Arm }}v{{ .Arm }}{{ end }}'
+    files:
+    - licence*
+    - LICENCE*
+    - license*
+    - LICENSE*
+    - readme*
+    - README*
+    - changelog*
+    - CHANGELOG*
+nfpms:
+   -
+     vendor: Apptio
+     homepage: "https://github.com/apptio/kube-config"
+     maintainer: Lee Briggs <lbriggs@apptio.com>
+     description: "Configure KUBECONFIG files for OIDC Kubernetes clusters"
+     license: MIT
+     formats:
+       - rpm
+       - deb
+     bindir: /usr/local/bin
 snapshot:
   name_template: SNAPSHOT-{{ .Commit }}
 dist: dist
 dockers:
   -
-    image_templates: 
+    image_templates:
       - 'apptio/kube-config:{{ .Tag }}'
       - 'apptio/kube-config:latest'
     dockerfile: Dockerfile-goreleaser
@@ -49,16 +52,15 @@ dockers:
       - "--label=org.label-schema.schema-version=1.0"
       - "--label=org.label-schema.version={{.Version}}"
       - "--label=org.label-schema.name={{.ProjectName}}"
-brew:
-  github:
-    owner: apptio
-    name: homebrew-tap
-
-  commit_author:
-    name: release
-    email: release@apptio.com
-
-  homepage: "https://apptio.com"
-  description: "Opinionated configuration management tool for Kubernetes Cluster"
-  install: |
-    bin.install "kube-config"
+brews:
+  -
+    github:
+      owner: apptio
+      name: homebrew-tap
+    commit_author:
+      name: release
+      email: release@apptio.com
+    homepage: "https://apptio.com"
+    description: "Opinionated configuration management tool for Kubernetes Cluster"
+    install: |
+      bin.install "kube-config"
