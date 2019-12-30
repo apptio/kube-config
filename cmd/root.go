@@ -198,7 +198,6 @@ It will also generate you a Kubernetes configuration file based on your login cr
 			var ok bool
 
 			log.Debug(outputFilePath)
-			_, err := os.Stat(outputFilePath)
 
 			if _, err := os.Stat(outputFilePath); os.IsNotExist(err) {
 				ok = prompt.Confirm("The kube-config directory doesn't exist at %s - Would you like to create it?: (y/n) ", outputFilePath)
