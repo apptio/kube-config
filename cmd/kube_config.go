@@ -1,8 +1,8 @@
 package cmd
 
 import (
-	"html/template"
 	"io"
+	"text/template"
 
 	log "github.com/Sirupsen/logrus"
 )
@@ -13,7 +13,7 @@ type KubeConfig struct {
 	Clusters     []Clusters
 	Username     string
 	NS           string
-	CAServername string
+	CAServerName string
 	tmpl         *template.Template
 	Output       io.ReadWriteCloser
 	ClientID     string
@@ -25,12 +25,12 @@ type KubeConfig struct {
 var content = `
 apiVersion: v1
 clusters:
-{{- $caservername := .CAServername }}
+{{- $caservername := .CAServerName }}
 {{- range .Clusters}}
 - cluster:
     {{- if .Certificate }}
     certificate-authority-data: {{.Certificate}}
-    {{- else }}{{- $sname := or .CAServername $caservername }}
+    {{- else }}{{- $sname := or .CAServerName $caservername }}
     certificate-authority-data: {{printf "https://%s:6444/ca.crt" .Address | getCert $sname }}
     {{- end }}
     server: https://{{.Address}}:6443
@@ -73,7 +73,7 @@ type configData struct {
 	Clusters     []Clusters
 	userName     string
 	NS           string
-	CAServername string
+	CAServerName string
 	Token        string
 	RefreshToken string
 	Username     string
@@ -87,10 +87,7 @@ var funcs = template.FuncMap{"getCert": GetCertificate}
 
 // NewKubeConfig returns an initialized KubeConfig struct.
 func NewKubeConfig(cluster string, clusters []Clusters, username string, namespace string, caservername string, output io.ReadWriteCloser, clientID string, issuer string, clientSecret string) (*KubeConfig, error) {
-	tmpl, err := template.New("config").Funcs(funcs).Parse(content)
-	if err != nil {
-		return nil, err
-	}
+	tmpl := template.Must(template.New("config").Funcs(funcs).Parse(content))
 
 	log.Debug("Operating on clusters: ", clusters)
 	log.Debug("Template: ", tmpl)
@@ -125,7 +122,7 @@ func (k *KubeConfig) Generate(token string, refreshToken string) error {
 		k.Clusters,
 		k.Username,
 		k.NS,
-		k.CAServername,
+		k.CAServerName,
 		token,
 		refreshToken,
 		userName,

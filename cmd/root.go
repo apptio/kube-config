@@ -67,7 +67,7 @@ var (
 	printgroups    bool
 )
 
-// for the version command
+//Version string for the version command
 var Version string
 
 // RootCmd represents the base command when called without any subcommands
@@ -110,6 +110,9 @@ It will also generate you a Kubernetes configuration file based on your login cr
 		}
 
 		err := viper.UnmarshalKey("tiers", &tiers)
+		if err != nil {
+			log.Fatalf("Failed to unmarshal key for given tiers: %v", tiers)
+		}
 
 		if listTiers {
 
@@ -118,12 +121,12 @@ It will also generate you a Kubernetes configuration file based on your login cr
 			log.Info("Outputting available tiers")
 
 			table := tablewriter.NewWriter(os.Stdout)
-			table.SetHeader([]string{"Name", "Issuer", "CAServername"})
+			table.SetHeader([]string{"Name", "Issuer", "CAServerName"})
 
 			for _, v := range tiers {
 				entry = append(entry, v.Name)
 				entry = append(entry, v.Issuer)
-				entry = append(entry, v.CAServername)
+				entry = append(entry, v.CAServerName)
 				table.Append(entry)
 				entry = entry[:0]
 			}
@@ -137,8 +140,8 @@ It will also generate you a Kubernetes configuration file based on your login cr
 		for _, i := range tiers {
 			if i.Name == tier {
 				issuerURL = i.Issuer
-				if i.CAServername != "" {
-					caservername = i.CAServername
+				if i.CAServerName != "" {
+					caservername = i.CAServerName
 				}
 
 				log.Debug("Using Issuer URL: ", issuerURL)
@@ -253,7 +256,7 @@ It will also generate you a Kubernetes configuration file based on your login cr
 
 		a.kubeconfig = kubeConfig
 
-		srv := startHttpServer(&a, listen)
+		srv := startHTTPServer(&a, listen)
 
 		open.Run(listen)
 
