@@ -1,8 +1,8 @@
 package cmd
 
 import (
-	"html/template"
 	"io"
+	"text/template"
 
 	log "github.com/Sirupsen/logrus"
 )
@@ -87,10 +87,7 @@ var funcs = template.FuncMap{"getCert": GetCertificate}
 
 // NewKubeConfig returns an initialized KubeConfig struct.
 func NewKubeConfig(cluster string, clusters []Clusters, username string, namespace string, caservername string, output io.ReadWriteCloser, clientID string, issuer string, clientSecret string) (*KubeConfig, error) {
-	tmpl, err := template.New("config").Funcs(funcs).Parse(content)
-	if err != nil {
-		return nil, err
-	}
+	tmpl := template.Must(template.New("config").Funcs(funcs).Parse(content))
 
 	log.Debug("Operating on clusters: ", clusters)
 	log.Debug("Template: ", tmpl)

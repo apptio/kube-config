@@ -114,8 +114,13 @@ func (a *app) handleCallback(w http.ResponseWriter, r *http.Request) {
 
 	t.RenderToken(w, a.redirectURI, rawIDToken, token.RefreshToken, buff.Bytes())
 
-	a.kubeconfig.Generate(rawIDToken, token.RefreshToken)
+	err = a.kubeconfig.Generate(rawIDToken, token.RefreshToken)
 	a.tokenRetrieved <- 1
+	if err != nil {
+		// Exit with error if there's an issue generating the template.
+		log.Fatal(err)
+		return
+	}
 
 	if printgroups {
 		var claimsJSON map[string]interface{}
