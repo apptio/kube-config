@@ -13,7 +13,7 @@ type KubeConfig struct {
 	Clusters     []Clusters
 	Username     string
 	NS           string
-	CAServerName string
+	CAServername string
 	tmpl         *template.Template
 	Output       io.ReadWriteCloser
 	ClientID     string
@@ -73,7 +73,7 @@ type configData struct {
 	Clusters     []Clusters
 	userName     string
 	NS           string
-	CAServerName string
+	CAServername string
 	Token        string
 	RefreshToken string
 	Username     string
@@ -125,7 +125,7 @@ func (k *KubeConfig) Generate(token string, refreshToken string) error {
 		k.Clusters,
 		k.Username,
 		k.NS,
-		k.CAServerName,
+		k.CAServername,
 		token,
 		refreshToken,
 		userName,
