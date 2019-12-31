@@ -25,12 +25,12 @@ type KubeConfig struct {
 var content = `
 apiVersion: v1
 clusters:
-{{- $caservername := .CAServername }}
+{{- $caservername := .CAServerName }}
 {{- range .Clusters}}
 - cluster:
     {{- if .Certificate }}
     certificate-authority-data: {{.Certificate}}
-    {{- else }}{{- $sname := or .CAServername $caservername }}
+    {{- else }}{{- $sname := or .CAServerName $caservername }}
     certificate-authority-data: {{printf "https://%s:6444/ca.crt" .Address | getCert $sname }}
     {{- end }}
     server: https://{{.Address}}:6443
