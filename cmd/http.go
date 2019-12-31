@@ -16,7 +16,7 @@ import (
 	"golang.org/x/oauth2"
 )
 
-func startHttpServer(a *app, listen string) *http.Server {
+func startHTTPServer(a *app, listen string) *http.Server {
 
 	u, err := url.Parse(a.redirectURI)
 	if err != nil {

@@ -24,16 +24,18 @@ type app struct {
 	kubeconfig *KubeConfig
 }
 
+//Clusters struct represents type of Cluster.
 type Clusters struct {
 	Name         string
 	Address      string
-	CAServername string
+	CAServerName string
 	Certificate  string
 	Tier         string
 }
 
+//Tiers struct represents type of Tier.
 type Tiers struct {
 	Name         string
 	Issuer       string
-	CAServername string
+	CAServerName string
 }
