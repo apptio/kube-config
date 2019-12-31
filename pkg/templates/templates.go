@@ -43,7 +43,6 @@ pre {
 </html>
 `))
 
-//RenderToken renders the token template in html with passed in values.
 func RenderToken(w http.ResponseWriter, redirectURL, idToken, refreshToken string, claims []byte) {
 	renderTemplate(w, tokenTmpl, tokenTmplData{
 		IDToken:      idToken,
