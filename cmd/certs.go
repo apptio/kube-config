@@ -26,13 +26,15 @@ func GetCertificate(serverName string, address string) string {
 	}
 	result, err := c.Get(address)
 	if err != nil {
-		log.WithFields(log.Fields{"server": address}).Fatal("Error getting remote certificate: ", err)
+		log.WithFields(log.Fields{"server": address}).Error("Error getting remote certificate: ", err)
+		return ""
 	}
 
 	defer result.Body.Close()
 	cert, err := ioutil.ReadAll(result.Body)
 	if err != nil {
-		log.WithFields(log.Fields{"server": address}).Fatal("Failed to read results:", err)
+		log.WithFields(log.Fields{"server": address}).Error("Failed to read results:", err)
+		return ""
 	}
 	encoded := b64.StdEncoding.EncodeToString(cert)
 

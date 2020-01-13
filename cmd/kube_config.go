@@ -27,14 +27,20 @@ apiVersion: v1
 clusters:
 {{- $caservername := .CAServerName }}
 {{- range .Clusters}}
-- cluster:
     {{- if .Certificate }}
+- cluster:
     certificate-authority-data: {{.Certificate}}
-    {{- else }}{{- $sname := or .CAServerName $caservername }}
-    certificate-authority-data: {{printf "https://%s:6444/ca.crt" .Address | getCert $sname }}
-    {{- end }}
     server: https://{{.Address}}:6443
   name: {{.Name}}
+    {{- else }}{{- $sname := or .CAServerName $caservername }}
+    {{- $cert := (printf "https://%s:6444/ca.crt" .Address | getCert $sname) }}
+    {{- if $cert }}
+- cluster:
+    certificate-authority-data: {{ $cert }}
+    server: https://{{.Address}}:6443
+  name: {{.Name}}
+    {{- end }}
+    {{- end }}
 {{- end}}
 contexts:
 {{- range .Clusters}}
